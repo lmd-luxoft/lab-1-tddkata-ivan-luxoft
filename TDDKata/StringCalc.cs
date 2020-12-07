@@ -7,6 +7,8 @@ namespace TDDKata
 {
     internal class StringCalc
     {
+        private static readonly char[] defaultDelimeters = new char[] { ',', '\n' };
+
         internal int Sum(string v)
         {
             var arrayOfInteger = SplitStringToArrayInt(v);
@@ -26,7 +28,7 @@ namespace TDDKata
                 return new int[] { 0 };
 
             var result = default(int[]);
-            var splitedArguments = arg.Split(',');
+            var splitedArguments = SplitStringArguments(arg, defaultDelimeters);
 
             if (splitedArguments.Any(s => s.Contains("-")
                 || s.Equals("")))
@@ -44,6 +46,11 @@ namespace TDDKata
             }
 
             return result;
+        }
+
+        private string[] SplitStringArguments(string argument, params char[] delimeters)
+        {
+            return argument.Split(delimeters);
         }
     }
 }
