@@ -1,56 +1,93 @@
 ﻿// NUnit 3 tests
 // See documentation : https://github.com/nunit/docs/wiki/NUnit-Documentation
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 
 namespace TDDKata
 {
     internal class StringCalc
     {
-        private static readonly char[] defaultDelimeters = new char[] { ',', '\n' };
-
         internal int Sum(string v)
         {
-            var arrayOfInteger = SplitStringToArrayInt(v);
+            ReadOnlyCollection<int> arrayOfInteger;
+            try
+            {
+                arrayOfInteger = new ArgumentSplitter(v).Arguments;
+            }
+            catch
+            {
+                return -1;
+            }
 
-            if (arrayOfInteger == null)
+            if (arrayOfInteger.Count == 0)
                 return -1;
 
             return arrayOfInteger.Aggregate((i1, i2) => i1 + i2);
         }
 
-        private int[] SplitStringToArrayInt(string arg)
+        private class ArgumentSplitter
         {
-            if (arg == null)
-                return null;
+            private char[] delimeters = new char[] { ',', '\n' };
+            private List<int> arguments = new List<int>();
 
-            if (arg == "")
-                return new int[] { 0 };
+            public ReadOnlyCollection<int> Arguments => arguments.AsReadOnly();
 
-            var result = default(int[]);
-            var splitedArguments = SplitStringArguments(arg, defaultDelimeters);
-
-            if (splitedArguments.Any(s => s.Contains("-")
-                || s.Equals("")))
-                return result;
-
-            try
+            public ArgumentSplitter(string argumentsString)
             {
-                result = splitedArguments
-                    .Select(s => int.Parse(s))
-                    .ToArray();
-            }
-            catch
-            {
-                return result;
+                if (argumentsString == "")
+                {
+                    arguments.Add(0);
+                }
+                else if (argumentsString != null)
+                {
+                    var stringArgWoDelimeter = FindDelimeterAndReturnArgumentsRow(argumentsString);
+                    if (stringArgWoDelimeter != null)
+                    {
+                        var argumentsFromString = SplitStringToArrayInt(stringArgWoDelimeter);
+                        this.arguments.AddRange(argumentsFromString);
+                    }
+                }
             }
 
-            return result;
-        }
+            private int[] SplitStringToArrayInt(string arg)
+            {
+                var splitedArguments = arg.Split(this.delimeters);
 
-        private string[] SplitStringArguments(string argument, params char[] delimeters)
-        {
-            return argument.Split(delimeters);
+                if (splitedArguments.Any(s => s.Equals("")))
+                    throw new ArgumentException("Between delimeters cannot be empty space");
+
+                try
+                {
+                    return splitedArguments
+                        .Select(s => int.Parse(s, NumberStyles.None))
+                        .ToArray();
+                }
+                catch(Exception ex)
+                {
+                    throw new ArgumentException("Between delimeters should be only digits", ex);
+                }
+            }
+
+            private string FindDelimeterAndReturnArgumentsRow(string arg)
+            {
+                if (!arg.StartsWith("//"))
+                    return arg;
+
+                var customDelimeterParameters = arg.Split('\n').First();
+                var customDelimeter = customDelimeterParameters.Skip(2).ToArray();
+
+                if (customDelimeter.Length != 1)
+                    throw new ArgumentException("Custom delimeter length must be one symbol");
+
+                if (int.TryParse(customDelimeter[0].ToString(), out var _))
+                    throw new ArgumentException("Custom delimeter cannot be number");
+
+                this.delimeters = customDelimeter;
+                return arg.Replace($"{customDelimeterParameters}\n", "");
+            }
         }
     }
 }
