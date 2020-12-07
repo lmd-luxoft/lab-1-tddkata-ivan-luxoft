@@ -34,6 +34,23 @@ namespace TDDKata
         }
 
         [Test]
+        [TestCase("1001", 0)]
+        [TestCase("1001,5", 5)]
+        [TestCase("7,9999,3", 10)]
+        [TestCase("//+\n1000+1001+1000", 2000)]
+        public void NumberGreatThanThousandShouldIgnore(string argForCalc, int expectedValue)
+        {
+            // Arrange
+            var calc = new StringCalc();
+
+            // Act
+            var actualValue = calc.Sum(argForCalc);
+
+            // Arrange
+            Assert.AreEqual(expectedValue, actualValue, "Number great than 1000 should be ignore");
+        }
+
+        [Test]
         [TestCase("1,5,999", 1005)]
         [TestCase("5,0,1,1", 7)]
         [TestCase("1,2,3,4,5", 15)]
