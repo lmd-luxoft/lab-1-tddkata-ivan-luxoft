@@ -11,8 +11,7 @@ namespace TDDKata
         {
             var arrayOfInteger = SplitStringToArrayInt(v);
 
-            if (arrayOfInteger == null
-                || arrayOfInteger.Length > 2)
+            if (arrayOfInteger == null)
                 return -1;
 
             return arrayOfInteger.Aggregate((i1, i2) => i1 + i2);
@@ -29,7 +28,8 @@ namespace TDDKata
             var result = default(int[]);
             var splitedArguments = arg.Split(',');
 
-            if (splitedArguments.Any(s => s.Contains("-")))
+            if (splitedArguments.Any(s => s.Contains("-")
+                || s.Equals("")))
                 return result;
 
             try
