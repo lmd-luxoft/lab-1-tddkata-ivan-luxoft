@@ -34,6 +34,22 @@ namespace TDDKata
         }
 
         [Test]
+        [TestCase("1,5,999", 1005)]
+        [TestCase("5,0,1,1", 7)]
+        [TestCase("1,2,3,4,5", 15)]
+        public void MoreThanTwoArgumentShouldCalculateCorrectly(string argForCalc, int expectedValue)
+        {
+            // Arrange
+            var calc = new StringCalc();
+
+            // Act
+            var actualValue = calc.Sum(argForCalc);
+
+            // Arrange
+            Assert.AreEqual(expectedValue, actualValue, "More than two argument calculated not correctly");
+        }
+
+        [Test]
         public void EmptyStringShouldReturnZero()
         {
             // Arrange
@@ -97,7 +113,8 @@ namespace TDDKata
 
         [Test]
         [TestCase(",")]
-        [TestCase("1,1,1")]
+        [TestCase("1,2,")]
+        [TestCase(",2,0")]
         [TestCase("1,a")]
         [TestCase("a,1")]
         [TestCase("?")]
