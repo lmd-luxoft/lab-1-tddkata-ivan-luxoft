@@ -50,6 +50,22 @@ namespace TDDKata
         }
 
         [Test]
+        [TestCase("1,5\n999", 1005)]
+        [TestCase("5\n1", 6)]
+        [TestCase("1\n2,3", 6)]
+        public void TwoSymbolCanBeUseAsDelimeterShouldWorkCorrectly(string argForCalc, int expectedValue)
+        {
+            // Arrange
+            var calc = new StringCalc();
+
+            // Act
+            var actualValue = calc.Sum(argForCalc);
+
+            // Arrange
+            Assert.AreEqual(expectedValue, actualValue, "Symbols \"\\n\" or \",\" Can be use as delimeter for numbers");
+        }
+
+        [Test]
         public void EmptyStringShouldReturnZero()
         {
             // Arrange
