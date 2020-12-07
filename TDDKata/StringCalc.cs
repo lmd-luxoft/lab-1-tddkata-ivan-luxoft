@@ -25,7 +25,9 @@ namespace TDDKata
             if (arrayOfInteger.Count == 0)
                 return -1;
 
-            return arrayOfInteger.Aggregate((i1, i2) => i1 + i2);
+            return arrayOfInteger
+                .Select(i => i > 1000 ? 0 : i)
+                .Aggregate((i1, i2) => i1 + i2);
         }
 
         private class ArgumentSplitter
@@ -65,7 +67,7 @@ namespace TDDKata
                         .Select(s => int.Parse(s, NumberStyles.None))
                         .ToArray();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     throw new ArgumentException("Between delimeters should be only digits", ex);
                 }
