@@ -66,6 +66,94 @@ namespace TDDKata
         }
 
         [Test]
+        [TestCase("//;\n1;5;998", 1004)]
+        [TestCase("//(\n1(5(999", 1005)]
+        [TestCase("//&\n1&5&999", 1005)]
+        [TestCase("//'\n1'5'999", 1005)]
+        [TestCase("//\\\n1\\5\\999", 1005)]
+        [TestCase("//\"\n1\"5\"999", 1005)]
+        [TestCase("// \n1 5 999", 1005)]
+        [TestCase("//-\n1-5-999", 1005)]
+        [TestCase("///\n1/5/997", 1003)]
+        [TestCase("//a\n1a5a999", 1005)]
+        public void CustomDelimeterShouldWorkCorrectly(string argForCalc, int expectedValue)
+        {
+            // Arrange
+            var calc = new StringCalc();
+
+            // Act
+            var actualValue = calc.Sum(argForCalc);
+
+            // Arrange
+            Assert.AreEqual(expectedValue, actualValue, "Argument with custom delimeter should calculated correctly");
+        }
+
+        [Test]
+        [TestCase("//\n,\n1,5\n999")]
+        [TestCase("//,.\n1,5,999")]
+        [TestCase("//,\n\n1,5,999")]
+        public void CustomDelimeterWithSomeSymbolsReturnError(string argForCalc)
+        {
+            // Arrange
+            var calc = new StringCalc();
+            var expectedValue = -1;
+
+            // Act
+            var actualValue = calc.Sum(argForCalc);
+
+            // Arrange
+            Assert.AreEqual(expectedValue, actualValue, "Delimeter should have one symbol");
+        }
+
+        [Test]
+        [TestCase("//-\n1,5")]
+        [TestCase("//.\n1\n5")]
+        public void UsageDefaultDelimeterInArgumentWithCustomShoulReturnError(string argForCalc)
+        {
+            // Arrange
+            var calc = new StringCalc();
+            var expectedValue = -1;
+
+            // Act
+            var actualValue = calc.Sum(argForCalc);
+
+            // Arrange
+            Assert.AreEqual(expectedValue, actualValue, "Default delimeter not works if set custom");
+        }
+
+        [Test]
+        [TestCase("//1,5")]
+        [TestCase("//,1,5")]
+        [TestCase("//\n1,5")]
+        public void UncorrectFormatForCustomDelimeterReturnError(string argForCalc)
+        {
+            // Arrange
+            var calc = new StringCalc();
+            var expectedValue = -1;
+            // Act
+            var actualValue = calc.Sum(argForCalc);
+
+            // Arrange
+            Assert.AreEqual(expectedValue, actualValue, "Uncorrect format for custom delimeter should return error");
+        }
+
+        [Test]
+        [TestCase("//0\n105")]
+        [TestCase("//8\n282")]
+        public void NumbersCannotUseAsDelimeterReturnError(string argForCalc)
+        {
+            // Arrange
+            var calc = new StringCalc();
+            var expectedValue = -1;
+
+            // Act
+            var actualValue = calc.Sum(argForCalc);
+
+            // Arrange
+            Assert.AreEqual(expectedValue, actualValue, "Numbers cannot use as delimeter");
+        }
+
+        [Test]
         public void EmptyStringShouldReturnZero()
         {
             // Arrange
